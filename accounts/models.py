@@ -57,6 +57,7 @@ class User(AbstractBaseUser,PermissionsMixin):
 
     is_staff = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=True)
+    to_network = models.CharField(max_length=65,null=False , blank=False, default='Native')
 
 
     USERNAME_FIELD = 'email'

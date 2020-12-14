@@ -34,12 +34,14 @@ class AuthSerailizer(serializers.Serializer):
             
             else:
                 return ({
+                    'status':'error',
                     'type-error':'password-error',
                     'messege':'La contraseña no es correcta'
                 })
 
         else:
             return ({
+                'status':'error',
                 'type-error':'email-error',
                 'messege':'El correo no existe'
             })
@@ -60,7 +62,8 @@ class RegisterSerializer(serializers.Serializer):
                 name=valid_data['name'],
                 email=valid_data['email'],
                 password=valid_data['password'],
-                nickName=valid_data['nickName']
+                nickName=valid_data['nickName'],
+                to_network=valid_data.get('to_network','Native')
             )
 
             data = { 
@@ -87,7 +90,7 @@ class AuthSocialSerializer(serializers.Serializer):
     nickName = serializers.CharField(max_length=50 , required=False)
     dateUser = serializers.DateTimeField(required=False)
 
-    def auth_social(self ,data) -> dict:
+    def auth_social(self ,data:dict) -> dict:
         is_register = User.objects.filter(email=data['email'])
         if is_register:
             auth = AuthSerailizer(data=data)
@@ -108,3 +111,7 @@ class AuthSocialSerializer(serializers.Serializer):
                     'type-error':'missing-data',
                     'messege':'Faltan datos para hacer el registro ...'
                 })
+
+
+
+

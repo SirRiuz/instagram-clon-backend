@@ -3,7 +3,7 @@
 # Rest_framework
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from rest_framework.authtoken.models import Token
+from rest_framework import status
 
 
 # Serailizers
@@ -12,10 +12,6 @@ from .serializers import (
     RegisterSerializer,
     AuthSocialSerializer
 )
-
-
-# Models
-from .models import User
 
 
 @api_view(['GET','POST'])
@@ -28,7 +24,7 @@ def auth(request) -> Response:
     serailizerAuth = AuthSerailizer(data=request.data)
     serailizerAuth.is_valid(raise_exception=True)
     authresponse = serailizerAuth.authenticate(data=serailizerAuth.data)
-    return Response(authresponse)
+    return Response(authresponse , status=status.HTTP_200_OK)
 
 
 
@@ -41,7 +37,7 @@ def register(request) -> Response:
     regSerializer = RegisterSerializer(data=request.data)
     regSerializer.is_valid(raise_exception=True)
     responseUserData = regSerializer.create_user(valid_data=regSerializer.data)
-    return Response(responseUserData)
+    return Response(responseUserData , status=status.HTTP_200_OK)
 
 
 
@@ -55,7 +51,7 @@ def authSocial(request) -> Response:
     authSerializer = AuthSocialSerializer(data=request.data)
     authSerializer.is_valid(raise_exception=True)
     responseJSON = authSerializer.auth_social(data=authSerializer.data)
-    return Response(responseJSON) 
+    return Response(responseJSON,status=status.HTTP_200_OK) 
 
 
 
