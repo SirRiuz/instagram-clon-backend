@@ -78,3 +78,33 @@ class RegisterSerializer(serializers.Serializer):
                 'messege':'Error al registrar el usuario'
             })
 
+
+class AuthSocialSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=50,required=False)
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(max_length=50 , required=True)
+    to_network = serializers.CharField(required=False)
+    nickName = serializers.CharField(max_length=50 , required=False)
+    dateUser = serializers.DateTimeField(required=False)
+
+    def auth_social(self ,data) -> dict:
+        is_register = User.objects.filter(email=data['email'])
+        if is_register:
+            auth = AuthSerailizer(data=data)
+            auth.is_valid(raise_exception=True)
+            authResponse = auth.authenticate(auth.data)
+            return authResponse
+
+        else:
+            registerSerializer = RegisterSerializer(data=data)
+            is_validData = registerSerializer.is_valid()
+            if is_validData:
+                registerResponse = registerSerializer.create_user(valid_data=registerSerializer.data)
+                return registerResponse
+
+            else:
+                return ({
+                    'status':'error',
+                    'type-error':'missing-data',
+                    'messege':'Faltan datos para hacer el registro ...'
+                })

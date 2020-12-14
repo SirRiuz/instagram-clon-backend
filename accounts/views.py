@@ -45,3 +45,17 @@ def register(request) -> Response:
 
 
 
+@api_view(['GET','POST'])
+def authSocial(request) -> Response:
+    """
+      Esta funcion es la encargada de 
+      hacer el proceso de autenticasion
+      con tras plataforms (Facebook , Google)
+    """
+    authSerializer = AuthSocialSerializer(data=request.data)
+    authSerializer.is_valid(raise_exception=True)
+    responseJSON = authSerializer.auth_social(data=authSerializer.data)
+    return Response(responseJSON) 
+
+
+
