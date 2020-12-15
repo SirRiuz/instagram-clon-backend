@@ -3,6 +3,7 @@
 # rets_framework
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
+from rest_framework.renderers import JSONRenderer
 
 
 # Models 
@@ -11,11 +12,14 @@ from accounts.models import User
 
 class FollowerSerailizer(serializers.Serializer):
     
-    tokenFollower = serializers.CharField(required=True)     #Yo
+    token = serializers.CharField(required=True)     #Yo
     following = serializers.CharField(required=True)
 
 
     def is_following(self,userFollower,userFollowing) -> bool:
+        """
+          Comprueba si el usuario es seguidor o no
+        """
         follow = Followers.objects.filter(
             userFollower=userFollower,
             userFollowing=userFollowing
@@ -26,10 +30,9 @@ class FollowerSerailizer(serializers.Serializer):
         return False
 
 
-    def set_follow(self,data):
-        token = data['tokenFollower']
+    def set_follow(self,data:dict) -> dict:
+        token = data['token']
         nickName = data['following']
-
         try:
             userFollower = Token.objects.get(key=token)
             userFollowing = User.objects.get(nickName=nickName)
@@ -40,10 +43,11 @@ class FollowerSerailizer(serializers.Serializer):
             )
 
             if is_follow:
-                return ({
-                    'status':'ok',
-                    'messege':'Ya estas siguiendo a {following}'.format(following=nickName)
-                })
+                result = self.del_follow(
+                    userFollower=userFollower.user,
+                    userFollowing=userFollowing
+                )
+                return result
 
             else:
                 if userFollower.user == userFollowing:
@@ -70,5 +74,39 @@ class FollowerSerailizer(serializers.Serializer):
                 'messege':str(e)
             })
 
+    def del_follow(self,userFollower,userFollowing):
+        result = Followers.objects.filter(
+            userFollower=userFollower,
+            userFollowing=userFollowing
+        )
+        if result:
+            result[0].delete()
 
-            
+        return ({
+            'status':'ok',
+            'messge':'Ya no estas siguiendo a {name}'.format(name=userFollowing.nickName)
+        })
+
+
+class ListFollowersSerailzier(serializers.Serializer):
+
+    token = serializers.CharField(required=True)
+
+    def get_follower_list(self,data) -> list:
+        """ 
+          Retorna una lista con todos los usuarios
+          que esta siguiendo
+        """
+        token = data['token']
+        try:
+            user = Token.objects.get(key=token)
+            followList=[]
+            followingList = Followers.objects.filter(userFollower=user.user)
+            for item in followingList:
+                followList.append(item.userFollowing.nickName)
+
+            return followList
+
+        except Exception as e:
+            print(e)
+            return []
