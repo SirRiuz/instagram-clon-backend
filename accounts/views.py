@@ -2,8 +2,9 @@
 
 # Rest_framework
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import (api_view,throttle_classes)
 from rest_framework import status
+from rest_framework.throttling import (UserRateThrottle,AnonRateThrottle)
 
 
 # Serailizers
@@ -14,7 +15,8 @@ from .serializers import (
 )
 
 
-@api_view(['GET','POST'])
+@throttle_classes([UserRateThrottle,AnonRateThrottle])
+@api_view(['POST','GET'])
 def auth(request) -> Response:
     """ 
       Esta funcion se encarga de hacer 
@@ -28,7 +30,7 @@ def auth(request) -> Response:
 
 
 
-@api_view(['GET','POST'])
+@api_view(['POST'])
 def register(request) -> Response:
     """
       Esta funcion se encarga de registrar

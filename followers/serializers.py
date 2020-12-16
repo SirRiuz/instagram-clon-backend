@@ -10,9 +10,10 @@ from rest_framework.renderers import JSONRenderer
 from .models import Followers
 from accounts.models import User
 
+
 class FollowerSerailizer(serializers.Serializer):
     
-    token = serializers.CharField(required=True)     #Yo
+    #token = serializers.CharField(required=True)     #Yo
     following = serializers.CharField(required=True)
 
 
@@ -30,27 +31,25 @@ class FollowerSerailizer(serializers.Serializer):
         return False
 
 
-    def set_follow(self,data:dict) -> dict:
-        token = data['token']
-        nickName = data['following']
+    def set_follow(self,userObject,follow) -> dict:
         try:
-            userFollower = Token.objects.get(key=token)
-            userFollowing = User.objects.get(nickName=nickName)
+            userFollower = userObject
+            userFollowing = User.objects.get(nickName=follow)
             
             is_follow = self.is_following(
-                userFollower=userFollower.user,
+                userFollower=userFollower,
                 userFollowing=userFollowing
             )
 
             if is_follow:
                 result = self.del_follow(
-                    userFollower=userFollower.user,
+                    userFollower=userFollower,
                     userFollowing=userFollowing
                 )
                 return result
 
             else:
-                if userFollower.user == userFollowing:
+                if userFollower == userFollowing:
                     return ({
                         'status':'error',
                         'type-error':'auto-follow',
@@ -59,7 +58,7 @@ class FollowerSerailizer(serializers.Serializer):
 
                 else:
                     follow = Followers.objects.create(
-                        userFollower=userFollower.user,
+                        userFollower=userFollower,
                         userFollowing=userFollowing
                     )
                     return ({
@@ -73,6 +72,7 @@ class FollowerSerailizer(serializers.Serializer):
                 'type-error':'follow-error',
                 'messege':str(e)
             })
+
 
     def del_follow(self,userFollower,userFollowing):
         result = Followers.objects.filter(
@@ -88,20 +88,18 @@ class FollowerSerailizer(serializers.Serializer):
         })
 
 
+
+
 class ListFollowersSerailzier(serializers.Serializer):
 
-    token = serializers.CharField(required=True)
-
-    def get_follower_list(self,data) -> list:
+    def get_follower_list(self,user) -> list:
         """ 
           Retorna una lista con todos los usuarios
           que esta siguiendo
         """
-        token = data['token']
         try:
-            user = Token.objects.get(key=token)
             followList=[]
-            followingList = Followers.objects.filter(userFollower=user.user)
+            followingList = Followers.objects.filter(userFollower=user)
             for item in followingList:
                 followList.append(item.userFollowing.nickName)
 
@@ -110,3 +108,7 @@ class ListFollowersSerailzier(serializers.Serializer):
         except Exception as e:
             print(e)
             return []
+
+
+
+
