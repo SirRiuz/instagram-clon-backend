@@ -2,12 +2,14 @@ from django.urls import path
 
 # Views
 from .views import (
-    getPostByNickName,
-    getPostByFollower
+    PostManager,
+    getPostByFollower,
+    PostManagerById
 )
 
 
 urlpatterns = [
-    path('post/', getPostByNickName.as_view()),
-    path('post/follow/',getPostByFollower.as_view())
+    path('post/', PostManager.as_view()),
+    path('post/follow/',getPostByFollower.as_view()),
+    path('post/<str:id>/', PostManagerById.as_view()),
 ]

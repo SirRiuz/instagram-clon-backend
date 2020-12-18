@@ -41,23 +41,17 @@ class User(AbstractBaseUser,PermissionsMixin):
 
     objects = CustomUserManager()
 
-    imageProfile = models.ImageField(
-        upload_to='img',
-        blank=True,
-        null=False
-    )
-
     name = models.CharField(max_length=50)
     nickName = models.CharField(max_length=50,unique=True)
 
     email = models.EmailField(unique=True)
 
-    userPage = models.URLField(null=True,blank=True)
-    description = models.TextField(null=True,blank=True)
+    #userPage = models.URLField(null=True,blank=True)
+    #description = models.TextField(null=True,blank=True)
 
     is_staff = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=True)
-    to_network = models.CharField(max_length=65,null=False , blank=False, default='Native')
+    #to_network = models.CharField(max_length=65,null=False , blank=False, default='Native')
 
 
     USERNAME_FIELD = 'email'

@@ -1,9 +1,14 @@
 
+# Utils
+from .utils import *
+
+
 # rets_framework
 from rest_framework.response import Response
 from rest_framework.decorators import (api_view,permission_classes)
 from rest_framework.permissions import IsAuthenticated
-
+from rest_framework.views import APIView
+from rest_framework import status
 
 # Models
 from .models import Post
@@ -17,14 +22,14 @@ from rest_framework.pagination import LimitOffsetPagination
 from followers.serializers import ListFollowersSerailzier
 
 
-class getPostByNickName(ListAPIView):
+class PostManager(ListAPIView):
 
     """
       Obtiene todos los videos que a subido
       un usuario en particular
     """
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [ IsAuthenticated ]
     serializer_class = PostSerailizer
     pagination_class = LimitOffsetPagination
 
@@ -39,9 +44,16 @@ class getPostByNickName(ListAPIView):
             return []
 
 
-    def post(self,request):
+    def post(self,request) -> Response:
         user = request.user
-        return Response('create post')
+        postSerailizer = PostSerailizer(data=request.POST)
+        postSerailizer.is_valid(raise_exception=True)
+        result = postSerailizer.create_post(
+          data=postSerailizer.data,
+          user=request.user,
+          postInstance=Post
+        )
+        return Response(result,status=status.HTTP_200_OK)
 
 
 
@@ -64,5 +76,120 @@ class getPostByFollower(ListAPIView):
         usersListObject = User.objects.filter(nickName__in=followList)
         postList = Post.objects.filter(user__in=usersListObject)
         return postList
+
+
+class PostManagerById(APIView):
+
+
+    """
+      Esta clase se encarga de obtener
+      editar y eliminar un post 
+      atraves del id
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request,id) -> Response:
+        """
+          Este metodo se engarga obtener un 
+          post atraves del id
+        """
+        try:
+          postObject = Post.objects.get(id=id)
+          return Response({
+            'status':'ok',
+            'videoID':postObject.id,
+            'posteador':postObject.user.nickName,
+            'text':postObject.text,
+            'hashTags':postObject.hashTags,
+            'likes':'',
+            'reproductions':'',
+          },status=status.HTTP_200_OK)
+
+        except Exception as e:
+          return Response({
+            'status':'error',
+            'type-errpr':'404-post-errpr',
+            'messege':'El post no existe'
+          },status=status.HTTP_404_NOT_FOUND)
+
+
+    def delete(self,request,id) -> Response:
+        """
+          Este metodo es el engargado de eliminar un
+          post, pero solo lo va a poder hacer el 
+          usuario que lo publico , los demas usuarios
+          no podran eliminarlo
+        """
+        try:
+          requestUser = request.user
+          post = Post.objects.get(id=id)
+          is_posteador = isPosteador(requestUser,user)
+
+          if is_posteador:
+            post.delete()
+            return Response({
+              'status':'ok',
+              'messege':'Post eliminado'
+            })
+
+          else:
+            return Response({
+              'status':'error',
+              'type-error':'permission-error',
+              'messege':'No tienes permisis para eliminar este post'
+            },status=status.HTTP_403_FORBIDDEN)
+          
+
+
+        except Exception as e:
+          return Response({
+            'status':'error',
+            'type-errpr':'404-post-errpr',
+            'messege':'El post no existe'
+          },status=status.HTTP_404_NOT_FOUND)
+
+
+    def put(self,request,id) -> Response:
+        """
+          Este metodo es el de editar una 
+          publicacion. Solo se podra editar 
+          el texto y los hashTags
+
+          Solo el posteador tendra el permiso
+          de editar la publicacion
+        """
+
+        try:
+          post = Post.objects.get(id=id)
+          is_posteador = isPosteador(request.user,post)
+          if is_posteador:
+            data = request.data
+            post.text = data.get('text',post.text)
+            post.hashTags = data.get('hashTags',post.hashTags)
+            post.save()
+
+            return Response({
+              'status':'ok',
+              'messege':'La publicacion a sido modificada'
+            })
+
+          else:
+            return Response({
+              'status':'error',
+              'type-error':'acces-denig',
+              'messege':'No tienes permisos de escritura para este post'
+            })
+          
+        except Exception as e:
+          return Response({
+            'status':'error',
+            'type-errpr':'404-post-errpr',
+            'messege':'El post no existe'
+          },status=status.HTTP_404_NOT_FOUND)
+
+
+
+
 
 
