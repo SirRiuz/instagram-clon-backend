@@ -11,7 +11,12 @@ class PostSerailizer(serializers.ModelSerializer):
 
     class Meta(object):
         model = Post
-        fields = [ 'id' , 'text' , 'likes' ,'videoDir', 'reproductions' , 'hashTags' , 'PointRank' ,'postDate' , 'posteador']
+        fields = [
+            'id' ,'text','likes',
+            'coments','videoDir',
+            'reproductions','hashTags',
+            'PointRank','postDate','posteador'
+        ]
 
 
     def create_post(self,user,data,postInstance) -> object:

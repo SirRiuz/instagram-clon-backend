@@ -10,6 +10,6 @@ from .views import (
 
 urlpatterns = [
     path('post/', PostManager.as_view()),
-    path('post/follow/',getPostByFollower.as_view()),
-    path('post/<str:id>/', PostManagerById.as_view()),
+    path('follow/post/',getPostByFollower.as_view()),
+    path('<str:id>/post/', PostManagerById.as_view()),
 ]

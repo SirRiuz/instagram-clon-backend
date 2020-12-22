@@ -4,13 +4,13 @@ from django.db import models
 
 
 # Models
-from post.models import Post
-from accounts.models import User
+#from post.models import Post
+#from accounts.models import User
 
 
 class AbstractBaseComent (models.Model):
 
-    user = models.ForeignKey(to=User,on_delete=models.CASCADE,null=True,blank=True)
+    user = models.ForeignKey('accounts.User',on_delete=models.CASCADE,null=True,blank=True)
 
     contenType = models.CharField(max_length=100,blank=True,null=True)
     contentUrl = models.URLField(blank=True,null=True)
@@ -36,7 +36,7 @@ class AbstractBaseComent (models.Model):
 
 class Coment(AbstractBaseComent):
 
-    post = models.ForeignKey(to=Post , on_delete=models.CASCADE,related_name='Post')
+    post = models.ForeignKey('post.Post' , on_delete=models.CASCADE,related_name='Post')
 
     @property
     def postTo(self) -> (str):
