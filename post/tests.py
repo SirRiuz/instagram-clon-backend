@@ -11,11 +11,10 @@ from accounts.models import User
 user = User.objects.get(nickName='Soy___Angi123')
 
 
-for position in range(0,1000):
-    Post.objects.create(
-        id='oooo{position}'.format(position=position),
+Post.objects.create(
+        id='TEXTPOSYASUDGASUDASDASDA',
         user=user,
-        text='Hola mundo',
+        text='Este es un por de pruebaaaaaaaaaaaaaaaaaaaaaaaaa',
         hashTags=''
-    )
+)
 

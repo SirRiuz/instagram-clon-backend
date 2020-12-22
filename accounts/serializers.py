@@ -26,24 +26,27 @@ class AuthSerailizer(serializers.Serializer):
             if is_password:
                 token = Token.objects.get_or_create(user=user[0])
                 return ({
-                    'statis':'ok',
-                    'id':token[0].user.id,
-                    'user':token[0].user.name,
-                    'token':token[0].key
+                    'data':{
+                        'id':token[0].user.id,
+                        'user':token[0].user.name,
+                        'token':token[0].key
+                    }
                 })
             
             else:
                 return ({
-                    'status':'error',
-                    'type-error':'password-error',
-                    'messege':'La contraseña no es correcta'
+                    'error':{
+                        'type-error':'password-error',
+                        'messege':'La contraseña no es correcta'
+                    }
                 })
 
         else:
             return ({
-                'status':'error',
-                'type-error':'email-error',
-                'messege':'El correo no existe'
+                'error':{
+                    'type-error':'email-error',
+                    'messege':'El correo no existe'
+                }
             })
 
 
@@ -66,9 +69,11 @@ class RegisterSerializer(serializers.Serializer):
                 to_network=valid_data.get('to_network','Native')
             )
 
-            data = { 
-                'email':user.email,
-                'password':valid_data['password']
+            data = {
+                'data':{
+                    'email':user.email,
+                    'password':valid_data['password']
+                } 
             }
 
             auth = AuthSerailizer(data=data)
@@ -77,8 +82,10 @@ class RegisterSerializer(serializers.Serializer):
 
         except Exception as e:
             return ({
-                'type-error':str(e).lower().replace(' ' , '-'),
-                'messege':'Error al registrar el usuario'
+                'error':{
+                    'type-error':str(e).lower().replace(' ' , '-'),
+                    'messege':'Error al registrar el usuario'
+                }
             })
 
 

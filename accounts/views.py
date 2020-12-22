@@ -15,8 +15,7 @@ from .serializers import (
 )
 
 
-@throttle_classes([UserRateThrottle,AnonRateThrottle])
-@api_view(['POST','GET'])
+@api_view(['POST'])
 def auth(request) -> Response:
     """ 
       Esta funcion se encarga de hacer 
@@ -43,7 +42,7 @@ def register(request) -> Response:
 
 
 
-@api_view(['GET','POST'])
+@api_view(['POST'])
 def authSocial(request) -> Response:
     """
       Esta funcion es la encargada de 

@@ -98,7 +98,7 @@ class ListFollowersSerailzier(serializers.Serializer):
           que esta siguiendo
         """
         try:
-            followList=[]
+            followList=[ user.nickName ]
             followingList = Followers.objects.filter(userFollower=user)
             for item in followingList:
                 followList.append(item.userFollowing.nickName)

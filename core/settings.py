@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'accounts',
     'followers',
-    'post'
+    'post',
+    'coments'
 ]
 
 MIDDLEWARE = [
@@ -74,7 +75,7 @@ TEMPLATES = [
 
 REST_FRAMEWORK = {
 
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS': 'post.customPagination.customPagination',
     'PAGE_SIZE': 10,
 
     'DEFAULT_AUTHENTICATION_CLASSES': [

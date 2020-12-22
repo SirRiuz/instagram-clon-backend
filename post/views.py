@@ -9,6 +9,7 @@ from rest_framework.decorators import (api_view,permission_classes)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework import status
+from .customPagination import customPagination
 
 # Models
 from .models import Post
@@ -67,14 +68,14 @@ class getPostByFollower(ListAPIView):
     
     permission_classes = [IsAuthenticated]
     serializer_class = PostSerailizer
-    pagination_class = LimitOffsetPagination
+    pagination_class = customPagination
 
 
-    def get_queryset(self) -> list:
+    def get_queryset(self) -> list:        
         user = self.request.user
         followList = ListFollowersSerailzier().get_follower_list(user=user)
         usersListObject = User.objects.filter(nickName__in=followList)
-        postList = Post.objects.filter(user__in=usersListObject)
+        postList = Post.objects.filter(user__in=usersListObject).order_by('-postDate')
         return postList
 
 
@@ -97,21 +98,26 @@ class PostManagerById(APIView):
         try:
           postObject = Post.objects.get(id=id)
           return Response({
-            'status':'ok',
-            'videoID':postObject.id,
-            'posteador':postObject.user.nickName,
-            'text':postObject.text,
-            'hashTags':postObject.hashTags,
-            'likes':'',
-            'reproductions':'',
+            'data':{
+              'post':{
+                'id':postObject.id,
+                'messege':postObject.text,
+                'video':'',
+                'likes':postObject.likes,
+                'hastTags':postObject.hashTags,
+                'reproductions':postObject.reproductions
+              },
+              'posteador':postObject.posteador
+            }
           },status=status.HTTP_200_OK)
 
         except Exception as e:
           return Response({
-            'status':'error',
-            'type-errpr':'404-post-errpr',
-            'messege':'El post no existe'
-          },status=status.HTTP_404_NOT_FOUND)
+            'error':{
+              'type-error':'post-not-exit',
+              'messge':'El post no existe ...'
+            }
+          },status=status.HTTP_400_BAD_REQUEST)
 
 
     def delete(self,request,id) -> Response:
@@ -124,29 +130,32 @@ class PostManagerById(APIView):
         try:
           requestUser = request.user
           post = Post.objects.get(id=id)
-          is_posteador = isPosteador(requestUser,user)
+          is_posteador = isPosteador(requestUser,post)
 
           if is_posteador:
             post.delete()
             return Response({
-              'status':'ok',
-              'messege':'Post eliminado'
+              'data':{
+                'messege':'Post eliminado'
+              }
             })
 
           else:
             return Response({
-              'status':'error',
-              'type-error':'permission-error',
-              'messege':'No tienes permisis para eliminar este post'
-            },status=status.HTTP_403_FORBIDDEN)
+              'error':{
+                'type-error':'permission-error',
+                'messege':'No tienes permisis para eliminar este post'
+              }
+            },status=status.HTTP_400_BAD_REQUEST)
           
 
-
         except Exception as e:
+          print('[Error] -> ',e)
           return Response({
-            'status':'error',
-            'type-errpr':'404-post-errpr',
-            'messege':'El post no existe'
+            'error':{
+              'type-errpr':'404-post-errpr',
+              'messege':'El post no existe'
+            }
           },status=status.HTTP_404_NOT_FOUND)
 
 
@@ -170,22 +179,26 @@ class PostManagerById(APIView):
             post.save()
 
             return Response({
-              'status':'ok',
-              'messege':'La publicacion a sido modificada'
+              'data':{
+                'status':'ok',
+                'messege':'La publicacion a sido modificada'
+              }
             })
 
           else:
             return Response({
-              'status':'error',
-              'type-error':'acces-denig',
-              'messege':'No tienes permisos de escritura para este post'
+              'error':{
+                'type-error':'acces-denig',
+                'messege':'No tienes permisos de escritura para este post'
+              }
             })
           
         except Exception as e:
           return Response({
-            'status':'error',
-            'type-errpr':'404-post-errpr',
-            'messege':'El post no existe'
+            'error':{
+              'type-errpr':'404-post-errpr',
+              'messege':'El post no existe'
+            }
           },status=status.HTTP_404_NOT_FOUND)
 
 

@@ -1,4 +1,8 @@
 
+# test
+import random
+
+
 # Django
 from django.db import models
 
@@ -8,7 +12,6 @@ from accounts.models import User
 
 
 class Post(models.Model):
-
 
     id = models.CharField(max_length=250,primary_key=True,help_text='Id del post')
 
@@ -44,7 +47,7 @@ class Post(models.Model):
 
     @property
     def likes(self) -> int:
-        return 0
+        return random.randint(0,1000)
 
     @property
     def videoDir(self) -> str:
