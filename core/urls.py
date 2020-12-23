@@ -8,5 +8,5 @@ urlpatterns = [
     path('api/v1/', include('followers.urls')),
     path('api/v1/', include('post.urls')),
     path('api/v1/', include('coments.urls')),
-
+    path('api/v1/', include('likes.urls')),
 ]

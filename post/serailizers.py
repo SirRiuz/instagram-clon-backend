@@ -15,7 +15,7 @@ class PostSerailizer(serializers.ModelSerializer):
             'id' ,'text','likes',
             'coments','videoDir',
             'reproductions','hashTags',
-            'PointRank','postDate','posteador'
+            'postDate','posteador'
         ]
 
 

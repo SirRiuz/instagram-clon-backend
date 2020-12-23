@@ -10,6 +10,7 @@ from django.db import models
 # Models
 #from accounts.models import User
 from coments.models import Coment
+from likes.models import LikePost
 
 
 class Post(models.Model):
@@ -38,11 +39,6 @@ class Post(models.Model):
         }
 
     @property
-    def PointRank(self) -> float:
-        return 0.0
-
-
-    @property
     def reproductions(self) -> int:
         return 0
 
@@ -53,7 +49,8 @@ class Post(models.Model):
 
     @property
     def likes(self) -> int:
-        return random.randint(0,1000)
+        likeList = LikePost.objects.filter(post=self)
+        return len(likeList)
 
     @property
     def videoDir(self) -> str:
