@@ -40,3 +40,18 @@ class LikeComent(AbstractBaseLike):
 
   def __str__(self) -> (str):
     return '[  {nick}  ] like to [  {postId}  ]'.format(nick=self.user.nickName,postId=self.coment.id)
+
+
+
+class LikeSubComent(AbstractBaseLike):
+
+  """
+    Este modelo se encarga de administrar
+    todos los likes de los subcomentarios 
+  """
+
+  subComent = models.ForeignKey('coments.SubComent',on_delete=models.CASCADE)
+
+
+  def __str__(self) -> (str):
+    return '[  {nick}  ] like to [  {postId}  ]'.format(nick=self.user.nickName,postId=self.subComent.id)

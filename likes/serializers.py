@@ -11,6 +11,21 @@ from coments.models import Coment
 
 
 
+class subComentLikeSerializer(serializers.Serializer):
+
+    comentId = serializers.CharField()
+    subComentId = serializers.CharField()
+
+
+    def create_like(self,user:object,comentId:str,subComentId:str) -> (dict):
+        return ({})
+
+
+
+
+
+
+
 class comentLikeSerializer(serializers.Serializer):
 
     comentId = serializers.CharField(required=True)

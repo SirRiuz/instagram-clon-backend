@@ -7,7 +7,22 @@ from rest_framework.response import Response
 
 
 # Serializers
-from .serializers import (postLikeSerializer,comentLikeSerializer)
+from .serializers import (
+    postLikeSerializer,
+    comentLikeSerializer,
+    subComentLikeSerializer
+)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def createLikeBySubComent(request,comentId,subComentId) -> (Response):
+    subComentId = subComentId
+    comentId = comentId
+
+
+
+    return Response('Sub coment like')
 
 
 @api_view(['POST'])

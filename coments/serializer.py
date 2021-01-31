@@ -27,7 +27,7 @@ class GetComentSerializer(serializers.ModelSerializer):
 class ComentSerailizer(serializers.Serializer):
 
     postId = serializers.CharField(required=False)
-    text = serializers.CharField(required=False)
+    text = serializers.CharField(required=True)
     #posteador = serializers.CharField(required=False)
     
     def create_coment(self,postId,userObject,text) -> (dict):
